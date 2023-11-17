@@ -1,9 +1,21 @@
 import { useState } from "react";
 
-const SignUpForm = ( {setToken}) => {
+const SignUpForm = ({ setToken }) => {
   const [username, setUsername] = useState("");
+  const [usernameError, setUsernameError] = useState(null);
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+
+  const handleUsername = (event) => {
+    const newUsername = event.target.value;
+    setUsername(newUsername);
+
+    if (newUsername.length < 8) {
+      setUsernameError("Username must be at least 8 characters long");
+    } else {
+      setUsernameError("");
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -23,8 +35,8 @@ const SignUpForm = ( {setToken}) => {
       );
 
       const dataResponse = await response.json();
-      console.log(dataResponse);
-      setToken(dataResponse.token)
+      setToken(dataResponse.token);
+      // console.log(dataResponse.token);
     } catch (error) {
       setError(error.message);
     }
@@ -38,11 +50,7 @@ const SignUpForm = ( {setToken}) => {
       <form onSubmit={handleSubmit}>
         <label>
           Username:
-          <input
-            type="text"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-          />
+          <input type="text" value={username} onChange={handleUsername} />
         </label>
         <label>
           Password:
@@ -52,7 +60,10 @@ const SignUpForm = ( {setToken}) => {
             onChange={(event) => setPassword(event.target.value)}
           />
         </label>
-        <button type="submit">Submit</button>
+        <button type="submit" hidden={username.length < 8}>
+          Submit
+        </button>
+        {<p>{usernameError}</p>}
       </form>
     </>
   );
